@@ -1,0 +1,29 @@
+import { useState } from 'react';
+
+const SocioForm = ({ onAddSocio }) => {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [foto, setFoto] = useState('');
+  const [planTipo, setPlanTipo] = useState('mensual');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [actividades, setActividades] = useState([]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const nuevoSocio = {
+      nombre,
+      email,
+      telefono,
+      foto,
+      plan: { tipo: planTipo, fechaInicio },
+      actividades,
+    };
+    onAddSocio(nuevoSocio);
+  };
+
+  return 
+
+};
+
+export default SocioForm;
