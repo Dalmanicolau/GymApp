@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const socioRoutes = require('./routes/socios');
-const actividadRoutes = require('./routes/activities');
+const memberRoutes = require('./routes/members');
+const activityRoutes = require('./routes/activities');
 
 const app = express();
 
@@ -16,8 +16,8 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/socios', socioRoutes);
-app.use('/api/actividades', actividadRoutes);
+app.use('/api/members', memberRoutes);
+app.use('/api/activities', activityRoutes);
 
 app.listen(3001, () => {
     console.log('server running on port', 3001);
