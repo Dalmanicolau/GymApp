@@ -1,7 +1,9 @@
-const router = express.Router();
+import express from 'express';
 import bcrypt from "bcryptjs";
 import User from "../models/User.js"
 import generateAndSetCookie from "../utils/generateToken.js"
+
+const router = express.Router();
 
 router.post('/signup', async (req, res) => {
     try {
@@ -62,4 +64,4 @@ router.post('/', async (req, res) => {
     }
 })
 
-module.exports = router;
+export default router;

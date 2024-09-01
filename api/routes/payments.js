@@ -23,6 +23,30 @@ router.get('/', async (req, res) => {
     }
   });
   
+  router.post('/', async (req, res) => {
+    try {
+      const { memberId, activityId, amount } = req.body;
+  
+      const member = await Member.findById(memberId);
+      const activity = await Activity.findById(activityId);
+  
+      if (!member || !activity) {
+        return res.status(400).json({ message: 'Miembro o actividad no encontrados' });
+      }
+  
+      const newPayment = new Payment({
+        member: memberId,
+        activity: activityId,
+        amount,
+      });
+  
+      await newPayment.save();
+      res.status(201).json(newPayment);
+    } catch (err) {
+      res.status(500).json({ message: 'Error al crear el pago', error: err });
+    }
+  });
+  
   // Actualizar un pago
   router.put('/:id', async (req, res) => {
     try {

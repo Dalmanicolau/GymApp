@@ -1,5 +1,6 @@
-const express = require('express');
-const Activity = require('../models/Activity');
+import express from 'express';
+import Activity from '../models/Activity.js';
+
 const router = express.Router();
 
 // Crear nueva actividad
@@ -33,4 +34,4 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

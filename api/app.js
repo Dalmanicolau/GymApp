@@ -1,12 +1,13 @@
-require('./db');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const memberRoutes = require('./routes/members');
-const activityRoutes = require('./routes/activities');
-const userRoutes = require ('./routes/users')
+import './db.js';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import express from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+import memberRoutes from './routes/members.js';
+import activityRoutes from './routes/activities.js';
+import userRoutes from './routes/users.js';
+
 
 const app = express();
 
