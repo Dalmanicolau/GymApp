@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Notifications = require("./notifications");
+import mongoose from 'mongoose';
+import Notifications from"./notifications.js";
 
 
 const paymentSchema = new mongoose.Schema({
@@ -28,5 +28,4 @@ paymentSchema.pre('findByIdAndRemove', function(next) {
 });
 
 const Payment = mongoose.model("payment", paymentSchema);
-
-module.exports = Payment;
+export default Payment;

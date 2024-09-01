@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import Member from '../models/Members.js';
+import Activity from '../models/Activity.js';
+
 const router = express.Router();
-const Member = require('../models/Members');
-const Activity = require('../models/Activity');
 
 router.post('/', async (req, res) => {
   try {
@@ -15,24 +16,32 @@ router.post('/', async (req, res) => {
     const activityIds = activities.map(id => id.toString());
     const activitiesData = await Activity.find({ '_id': { $in: activityIds } });
 
+    // Imprimir actividades para verificar los datos
+    console.log("Activities Data:", activitiesData);
+
+    // Separar actividades en musculación y clases
+    const hasMusculacion = activitiesData.some(activity => activity.category === 'musculacion');
+    const hasClass = activitiesData.some(activity => activity.category === 'class');
+
+    // Imprimir los resultados de la verificación
+    console.log("Has Musculacion:", hasMusculacion);
+    console.log("Has Class:", hasClass);
+
     let totalPriceActivities = 0;
 
     if (promotion) {
-      const musculacion = await Activity.findOne({ name: 'Musculacion' });
-      if (!musculacion) {
-        return res.status(400).json({ message: 'La actividad de musculación no se encontró en la base de datos.' });
-      }
-      if (!activityIds.includes(musculacion._id.toString())) {
-        return res.status(400).json({ message: 'La promoción debe incluir musculación.' });
-      }
-      if (activityIds.length !== 2) {
-        return res.status(400).json({ message: 'La promoción permite máximo 2 actividades.' });
-      }
-      totalPriceActivities = 17000;
+      // Si hay promoción, el precio es 19,000
+      totalPriceActivities = 19000;
+    } else if (hasMusculacion && hasClass) {
+      // Si no hay promoción, pero el miembro selecciona musculación y al menos una clase
+      totalPriceActivities = 19000;
     } else {
-      const uniqueActivities = new Set(activitiesData.map(activity => activity.name));
-      totalPriceActivities = uniqueActivities.size === 1 && uniqueActivities.has("Musculacion") ? 16000 : 16000;
+      // Si no hay promoción y solo musculación o solo clases
+      totalPriceActivities = 17000;
     }
+
+    // Imprimir el precio calculado
+    console.log("Total Price Activities:", totalPriceActivities);
 
     const expirationDate = plan.type === 'monthly' ? 
       new Date(new Date(plan.initDate).setMonth(new Date(plan.initDate).getMonth() + 1)) :
@@ -61,6 +70,8 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Error al crear el socio', error });
   }
 });
+
+
 
 // Obtener todos los member
 router.get('/', async (req, res) => {
@@ -131,4 +142,4 @@ router.get('/facturation/:month/:year', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

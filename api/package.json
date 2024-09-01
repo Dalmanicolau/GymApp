@@ -1,14 +1,14 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "server": "nodemon backend/server.js",
-		"dev": "nodemon backend/server.js",
-		"start": "node backend/server.js",
+    "server": "nodemon app.js",
+		"dev": "nodemon app.js",
+		"start": "node app.js",
 		"build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
-
   },
+  "type":"module",
   "keywords": [],
   "author": "",
   "license": "ISC",
