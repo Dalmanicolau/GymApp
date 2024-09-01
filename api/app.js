@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const memberRoutes = require('./routes/members');
 const activityRoutes = require('./routes/activities');
+const userRoutes = require ('./routes/users')
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/api/members', memberRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/users', userRoutes);
 
 app.listen(3001, () => {
     console.log('server running on port', 3001);

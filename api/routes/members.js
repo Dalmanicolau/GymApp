@@ -1,7 +1,7 @@
 const express = require('express');
+const router = express.Router();
 const Member = require('../models/Members');
 const Activity = require('../models/Activity');
-const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
@@ -28,9 +28,10 @@ router.post('/', async (req, res) => {
       if (activityIds.length !== 2) {
         return res.status(400).json({ message: 'La promoción permite máximo 2 actividades.' });
       }
-      totalPriceActivities = 18000;
+      totalPriceActivities = 17000;
     } else {
-      totalPriceActivities = activitiesData.reduce((total, activity) => total + activity.price, 0);
+      const uniqueActivities = new Set(activitiesData.map(activity => activity.name));
+      totalPriceActivities = uniqueActivities.size === 1 && uniqueActivities.has("Musculacion") ? 16000 : 16000;
     }
 
     const expirationDate = plan.type === 'monthly' ? 
@@ -78,22 +79,22 @@ router.put('/:id/renew', async (req, res) => {
     if (!member) return res.status(404).json({ message: 'Socio no encontrado' });
 
     const currentDate = new Date();
-    member.plan.lastRenewalDate = currentDate; // actualizar la fecha de la última renovación
+    member.plan.lastRenewalDate = currentDate;
 
     const newExpiration = member.plan.type === 'monthly' ?
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate()) :
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 6, currentDate.getDate());
 
     member.plan.expirationDate = newExpiration;
+
     await member.save();
+
     
     res.status(200).json(member);
   } catch (error) {
     res.status(500).json({ message: 'Error al renovar la membresía', error });
   }
 });
-
-
 
 // Obtener facturación del mes
 router.get('/facturation/:month/:year', async (req, res) => {
@@ -129,7 +130,5 @@ router.get('/facturation/:month/:year', async (req, res) => {
     res.status(500).json({ message: 'Error al obtener la facturación', error });
   }
 });
-
-
 
 module.exports = router;
