@@ -1,9 +1,10 @@
-const express = require('express');
-const Member = require("../../models/Members");
-const Notification = require("../../models/Notification");
+import express from 'express';
+import Member from '../models/Members.js'
+import Notification from '../models/Notification.js'
+
 const router = express.Router();
 
-router.get('/notifications/expiring', async (req, res) => {
+router.get('/expiring', async (req, res) => {
     try {
       const today = new Date();
       const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
@@ -25,3 +26,5 @@ router.get('/notifications/expiring', async (req, res) => {
       res.status(500).json({ message: 'Error al generar notificaciones', error });
     }
   });
+
+  export default router;

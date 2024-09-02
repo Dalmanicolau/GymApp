@@ -6,7 +6,13 @@ const router = express.Router();
 // Crear nueva actividad
 router.post('/', async (req, res) => {
   try {
-    const newActivity = new Activity(req.body);
+    const { name, available, price, category } = req.body;
+    const newActivity = new Activity({
+      name,
+      available,
+      price,
+      category
+    })
     await newActivity.save();
     res.status(201).json(newActivity);
   } catch (error) {

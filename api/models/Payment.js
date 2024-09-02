@@ -1,31 +1,37 @@
 import mongoose from 'mongoose';
-import Notifications from"./notifications.js";
-
+import Notification from "./Notification.js";
 
 const paymentSchema = new mongoose.Schema({
   amount: {
     type: Number,
+    required: true
   },
   months: {
-    type: Number,
-  },
-  activity: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "activity",
+    type: Number
   },
   member: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "member",
+    ref: "Member",
+    required: true
   },
+  activity: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Activity",
+  }],
   date: {
     type: Date,
-  },
-});
+    default: Date.now
+  }
+},
+{
+  strictPopulate: false,
+}
+);
 
 paymentSchema.pre('findByIdAndRemove', function(next) {
-  Notifications.deleteMany({payment: this._id});
+  Notification.deleteMany({ payment: this._id });
   next();
 });
 
-const Payment = mongoose.model("payment", paymentSchema);
+const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;
