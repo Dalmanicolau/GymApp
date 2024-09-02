@@ -107,39 +107,4 @@ router.put('/:id/renew', async (req, res) => {
   }
 });
 
-// Obtener facturación del mes
-router.get('/facturation/:month/:year', async (req, res) => {
-  const { month, year } = req.params;
-  try {
-    const initMonth = new Date(`${year}-${month}-01`);
-    const endMonth = new Date(initMonth.getFullYear(), initMonth.getMonth() + 2, 0, 23, 59, 59); // último día del mes actual
-
-    console.log('initMonth:', initMonth);
-    console.log('endMonth:', endMonth);
-
-    const members = await Member.find({
-      $or: [
-        { 'plan.initDate': { $gte: initMonth, $lte: endMonth } },
-        { 'plan.lastRenewalDate': { $gte: initMonth, $lte: endMonth } }
-      ]
-    }).populate('activities');
-
-    console.log('members found:', members);
-
-    const totalFacturated = members.reduce((total, member) => {
-      if (member.plan.promotion) {
-        return total + member.plan.price;
-      } else {
-        const priceActivities = member.activities.reduce((sum, activity) => sum + activity.price, 0);
-        return total + member.plan.price + priceActivities;
-      }     
-    }, 0);
-
-    res.status(200).json({ total: totalFacturated, members: members.length });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Error al obtener la facturación', error });
-  }
-});
-
 export default router;

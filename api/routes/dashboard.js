@@ -1,18 +1,17 @@
 import express from 'express';
-import Member from "../../models/Members.js";
-import Activity from "../../models/Activity.js";
-import Payment from "../../models/Payments.js";
-import Notification from "../../models/Notification.js";
+import Member from "../models/Members.js";
+import Activity from "../models/Activity.js";
+import Payment from "../models/Payment.js";
+import Notification from "../models/Notification.js";
 
 const router = express.Router();
 
-router.get('/dashboard', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const today = new Date();
     const monthDate = new Date(today.setMonth(today.getMonth() - 1));
 
     const membersCount = await Member.countDocuments({});
-    const unpaidCount = await Payment.countDocuments({ credit: { $gt: 0 } });
 
     const membersPerMonth = await Member.countDocuments({
       createdAt: { $gte: monthDate },
@@ -64,7 +63,7 @@ router.get('/dashboard', async (req, res) => {
 
     const sportsByMembers = await Promise.all(
       sportsMembers.map(async (i) => {
-        const sport = await SportType.findById(i._id);
+        const sport = await Activity.findById(i._id);
         const members = i.count;
         return { sport, members };
       })
@@ -74,7 +73,6 @@ router.get('/dashboard', async (req, res) => {
       membersCount,
       totalIncome,
       membersPerMonth,
-      unpaidCount,
       table,
       activityByIncome,
       notifications,
@@ -87,4 +85,4 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,43 +1,125 @@
-const express = require('express');
-const Payment = require('../models/payments');
+import express from 'express';
+import Payment from '../models/Payment.js';
+import Member from '../models/Members.js'
+
 const router = express.Router();
 
-// Obtener todos los pagos
-router.get('/', async (req, res) => {
-    try {
-      const payments = await Payment.find().populate('member').populate('activity');
-      res.status(200).json(payments);
-    } catch (err) {
-      res.status(500).json({ message: 'Error al obtener los pagos', error: err });
-    }
-  });
+
+//Obtiene la facturacion de un mes elegido
+router.get('/:month/:year', async (req, res) => {
+  const { month, year } = req.params;
+
+  try {
+    const initMonth = new Date(`${year}-${month}-01`);
+    const endMonth = new Date(initMonth.getFullYear(), initMonth.getMonth() + 2, 0);
+
+    console.log(initMonth, endMonth)
+
+    // Obtener los pagos en el rango de fechas
+    const payments = await Payment.find({
+      date: { $gte: initMonth, $lte: endMonth }
+    }).populate('activity');
+
+    // Calcular el total facturado y la distribución por categoría
+    let totalFacturated = 0;
+    let classPayments = 0;
+    let musculacionPayments = 0;
+    let promotionPayments = 0;
+
+    payments.forEach(payment => {
+      totalFacturated += payment.amount;
+
+      const hasMusculacion = payment.activity.some(act => act.category === 'musculacion');
+      const hasClass = payment.activity.some(act => act.category === 'class');
+
+      if (hasMusculacion && hasClass) {
+        promotionPayments += payment.amount;
+      } else if (hasClass) {
+        classPayments += payment.amount;
+      } else if (hasMusculacion) {
+        musculacionPayments += payment.amount;
+      }
+    });
+
+    res.status(200).json({
+      total: totalFacturated,
+      classPayments,
+      musculacionPayments,
+      promotionPayments,
+      count: payments.length
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ message: 'Error al obtener la facturación', error });
+  }
+});
+
+//Obtener la facturacion de el mes corriente
+router.get('/current', async (req, res) => {
+  try {
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const payments = await Payment.find({
+      date: { $gte: firstDayOfMonth, $lte: lastDayOfMonth }
+    }).populate('activity');
+
+    let totalFacturated = 0;
+    let classPayments = 0;
+    let musculacionPayments = 0;
+    let promotionPayments = 0;
+
+    payments.forEach(payment => {
+      totalFacturated += payment.amount;
+
+      const hasMusculacion = payment.activity.some(act => act.category === 'musculacion');
+      const hasClass = payment.activity.some(act => act.category === 'class');
+
+      if (hasMusculacion && hasClass) {
+        promotionPayments += payment.amount;
+      } else if (hasClass) {
+        classPayments += payment.amount;
+      } else if (hasMusculacion) {
+        musculacionPayments += payment.amount;
+      }
+    });
+
+    res.status(200).json({
+      total: totalFacturated,
+      classPayments,
+      musculacionPayments,
+      promotionPayments,
+      count: payments.length
+    });
+  } catch (error) {
+    console.error('Error al obtener los pagos del mes corriente:', error);
+    res.status(500).json({ message: 'Error al obtener los pagos', error });
+  }
+});
+
+
   
   // Obtener un pago específico
-  router.get('/:id', async (req, res) => {
-    try {
-      const payment = await Payment.findById(req.params.id).populate('member').populate('activity');
-      if (!payment) return res.status(404).json({ message: 'Pago no encontrado' });
-      res.status(200).json(payment);
-    } catch (err) {
-      res.status(500).json({ message: 'Error al obtener el pago', error: err });
-    }
-  });
   
   router.post('/', async (req, res) => {
     try {
-      const { memberId, activityId, amount } = req.body;
+      const { member } = req.body;
   
-      const member = await Member.findById(memberId);
-      const activity = await Activity.findById(activityId);
+      const memberFound = await Member.findById(member);
   
-      if (!member || !activity) {
-        return res.status(400).json({ message: 'Miembro o actividad no encontrados' });
+      if (!memberFound) {
+        return res.status(400).json({ message: 'Miembro no encontrado' });
       }
   
+      const amount = memberFound.plan.price // Suponiendo que el monto del pago es el precio del plan
+      console.log(memberFound.activities)
+  
       const newPayment = new Payment({
-        member: memberId,
-        activity: activityId,
-        amount,
+        member: member,
+        amount, // Utilizar el monto obtenido del plan del miembro
+        date: new Date(), // Fecha del pago actual
+        activity: memberFound.activities
       });
   
       await newPayment.save();
@@ -47,25 +129,5 @@ router.get('/', async (req, res) => {
     }
   });
   
-  // Actualizar un pago
-  router.put('/:id', async (req, res) => {
-    try {
-      const updatedPayment = await Payment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      res.status(200).json(updatedPayment);
-    } catch (err) {
-      res.status(500).json({ message: 'Error al actualizar el pago', error: err });
-    }
-  });
-  
-  // Eliminar un pago
-  router.delete('/:id', async (req, res) => {
-    try {
-      await Payment.findByIdAndDelete(req.params.id);
-      res.status(200).json({ message: 'Pago eliminado' });
-    } catch (err) {
-      res.status(500).json({ message: 'Error al eliminar el pago', error: err });
-    }
-  });
-  
-  module.exports = router;
+export default router;
   
