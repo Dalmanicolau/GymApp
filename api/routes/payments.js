@@ -128,6 +128,15 @@ router.get('/current', async (req, res) => {
       res.status(500).json({ message: 'Error al crear el pago', error: err });
     }
   });
+
+  router.get('/', async (req, res) => {
+    try {
+      const payments = await Payment.find().populate('member').populate('activity');  
+      res.status(200).json(payments);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener los pagos', error });
+    }
+  });
   
 export default router;
   
