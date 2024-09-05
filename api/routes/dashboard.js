@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import Member from "../models/Members.js";
 import Activity from "../models/Activity.js";
 import Payment from "../models/Payment.js";
@@ -6,7 +6,7 @@ import Notification from "../models/Notification.js";
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const today = new Date();
     const monthDate = new Date(today.setMonth(today.getMonth() - 1));
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
     });
 
     // Obtener ingresos por mes
-    const incomeByMonth = Array(12).fill(0); // Tabla de 12 meses para contar ingresos por mes
+    // Tabla de 12 meses para contar ingresos por mes
 
     const monthlyIncome = await Payment.aggregate([
       {
@@ -45,6 +45,8 @@ router.get('/', async (req, res) => {
         },
       },
     ]);
+
+    const incomeByMonth = Array(12).fill(0);
 
     monthlyIncome.forEach((item) => {
       incomeByMonth[item._id - 1] = item.totalIncome; // Guardar los ingresos en el mes correspondiente
@@ -74,7 +76,7 @@ router.get('/', async (req, res) => {
     const notifications = await Notification.find({});
 
     const sportsMembers = await Payment.aggregate([
-      { "$group": { _id: "$activity", count: { $sum: 1 } } }
+      { $group: { _id: "$activity", count: { $sum: 1 } } },
     ]);
 
     const sportsByMembers = await Promise.all(
@@ -93,12 +95,13 @@ router.get('/', async (req, res) => {
       activityByIncome,
       notifications,
       sportsByMembers,
-      incomeByMonth // Ingresos por mes
+      incomeByMonth, // Ingresos por mes
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: 'Error al obtener datos del dashboard', error: err });
+    res
+      .status(500)
+      .json({ message: "Error al obtener datos del dashboard", error: err });
   }
 });
 

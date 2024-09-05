@@ -64,7 +64,7 @@ function Dashboard() {
         </div>
         <div className="p-4 bg-white rounded shadow">
           <h2 className="text-xl font-bold">Pagos</h2>
-          <p>Reciente: ${totalIncome}</p>
+          <p>Reciente: ${totalIncome} </p>
         </div>
         <div className="p-4 bg-white rounded shadow">
           <h2 className="text-xl font-bold">Actividades</h2>
@@ -79,8 +79,8 @@ function Dashboard() {
             <h2 className="text-xl font-bold mb-4">Ingresos por Actividad</h2>
             <PieChart
               series={[{ data: incomeData }]}
-              width={200}
-              height={200}
+              width={350}
+              height={350}
             />
           </div>
           <div className="ml-6">
@@ -100,8 +100,8 @@ function Dashboard() {
             <h2 className="text-xl font-bold mb-4">Miembros por Deporte</h2>
             <PieChart
               series={[{ data: membersData }]}
-              width={200}
-              height={200}
+              width={350}
+              height={350}
             />
           </div>
           <div className="ml-6">
