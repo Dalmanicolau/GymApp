@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
     const payments = await Payment.find();
 
-    const table = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const table = Array(12).fill(0); // Tabla de 12 meses para contar miembros por mes
 
     const monthlySubs = await Member.aggregate([
       {
@@ -31,7 +31,23 @@ router.get('/', async (req, res) => {
     ]);
 
     monthlySubs.forEach((item) => {
-      table[item._id] = item.subs;
+      table[item._id - 1] = item.subs; // Guardar los miembros por mes
+    });
+
+    // Obtener ingresos por mes
+    const incomeByMonth = Array(12).fill(0); // Tabla de 12 meses para contar ingresos por mes
+
+    const monthlyIncome = await Payment.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" }, // Agrupar pagos por mes
+          totalIncome: { $sum: "$amount" }, // Sumar el monto de los pagos
+        },
+      },
+    ]);
+
+    monthlyIncome.forEach((item) => {
+      incomeByMonth[item._id - 1] = item.totalIncome; // Guardar los ingresos en el mes correspondiente
     });
 
     const sportsIncome = await Payment.aggregate([
@@ -76,7 +92,8 @@ router.get('/', async (req, res) => {
       table,
       activityByIncome,
       notifications,
-      sportsByMembers
+      sportsByMembers,
+      incomeByMonth // Ingresos por mes
     });
 
   } catch (err) {
