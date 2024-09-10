@@ -17,15 +17,13 @@ router.post('/', async (req, res) => {
     const activitiesData = await Activity.find({ '_id': { $in: activityIds } });
 
     // Imprimir actividades para verificar los datos
-    console.log("Activities Data:", activitiesData);
+    
 
     // Separar actividades en musculación y clases
     const hasMusculacion = activitiesData.some(activity => activity.category === 'musculacion');
     const hasClass = activitiesData.some(activity => activity.category === 'class');
 
-    // Imprimir los resultados de la verificación
-    console.log("Has Musculacion:", hasMusculacion);
-    console.log("Has Class:", hasClass);
+
 
     let totalPriceActivities = 0;
 
@@ -43,7 +41,7 @@ router.post('/', async (req, res) => {
     // Imprimir el precio calculado
     console.log("Total Price Activities:", totalPriceActivities);
 
-    const expirationDate = plan.type === 'monthly' ? 
+    const expirationDate = plan?.type === 'Mensual' ? 
       new Date(new Date(plan.initDate).setMonth(new Date(plan.initDate).getMonth() + 1)) :
       new Date(new Date(plan.initDate).setMonth(new Date(plan.initDate).getMonth() + 6));
 
@@ -92,7 +90,7 @@ router.put('/:id/renew', async (req, res) => {
     const currentDate = new Date();
     member.plan.lastRenewalDate = currentDate;
 
-    const newExpiration = member.plan.type === 'monthly' ?
+    const newExpiration = member.plan.type === 'Mensual' ?
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate()) :
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 6, currentDate.getDate());
 

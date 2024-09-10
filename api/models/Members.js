@@ -5,7 +5,7 @@ const memberSchema = new mongoose.Schema({
   email: String,
   cellphone: String,
   plan: {
-    type: { type: String, enum: ['monthly', 'semiannual'], required: true },
+    type: { type: String, enum: ['Mensual', 'Semestral'], required: true },
     initDate: { type: Date, required: true },
     expirationDate: { type: Date, required: true },
     lastRenewalDate: Date,

@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express";
 import Member from "../models/Members.js";
 import Activity from "../models/Activity.js";
 import Payment from "../models/Payment.js";
@@ -6,7 +6,7 @@ import Notification from "../models/Notification.js";
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const today = new Date();
     const monthDate = new Date(today.setMonth(today.getMonth() - 1));
@@ -19,19 +19,29 @@ router.get('/', async (req, res) => {
 
     const payments = await Payment.find();
 
-    const table = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
+    const table = Array(12).fill(0);
     const monthlySubs = await Member.aggregate([
-      {
-        $group: {
-          _id: { $month: "$createdAt" },
-          subs: { $sum: 1 },
-        },
-      },
+      { $group: { _id: { $month: "$createdAt" }, subs: { $sum: 1 } } }
     ]);
 
     monthlySubs.forEach((item) => {
-      table[item._id] = item.subs;
+      table[item._id - 1] = item.subs;
+    });
+
+    // Obtener ingresos por mes
+    const now = new Date();
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+
+    const paymentsByMonth = await Payment.aggregate([
+      { $match: { date: { $gte: oneYearAgo, $lte: now } } },
+      { $group: { _id: { year: { $year: "$date" }, month: { $month: "$date" } }, totalIncome: { $sum: "$amount" } } },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    const incomeByMonth = Array(12).fill(0);
+    paymentsByMonth.forEach((payment) => {
+      const monthIndex = payment._id.month - 1;
+      incomeByMonth[monthIndex] += payment.totalIncome;
     });
 
     const sportsIncome = await Payment.aggregate([
@@ -58,7 +68,7 @@ router.get('/', async (req, res) => {
     const notifications = await Notification.find({});
 
     const sportsMembers = await Payment.aggregate([
-      { "$group": { _id: "$activity", count: { $sum: 1 } } }
+      { $group: { _id: "$activity", count: { $sum: 1 } } },
     ]);
 
     const sportsByMembers = await Promise.all(
@@ -76,12 +86,14 @@ router.get('/', async (req, res) => {
       table,
       activityByIncome,
       notifications,
-      sportsByMembers
+      sportsByMembers,
+      incomeByMonth, // Ingresos por mes
     });
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: 'Error al obtener datos del dashboard', error: err });
+    res
+      .status(500)
+      .json({ message: "Error al obtener datos del dashboard", error: err });
   }
 });
 
