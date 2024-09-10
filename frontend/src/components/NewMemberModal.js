@@ -58,12 +58,7 @@ function NewMemberModal({ closeModal }) {
 
       if (registeredMember) {
         setNewMember(registeredMember); // Guardar el miembro registrado en el estado
-        await new Promise((resolve) =>{
-          setNewMember(registeredMember);
-          resolve();
-        } )
         console.log("Guardando nuevo miembro en el estado:", registeredMember); // Verifica que newMember se esté guardando correctamente
-        closeModal(); // Cerrar el modal de nuevo miembro
         setIsPaymentModalOpen(true); // Abrir el modal de pago
       }
     } catch (error) {
@@ -71,15 +66,9 @@ function NewMemberModal({ closeModal }) {
     }
   };
 
-  // Este useEffect se ejecuta cuando newMember cambia
   useEffect(() => {
-    console.log("ejecutando useEffect...", newMember);
-    if (newMember) {
-      console.log("Nuevo miembro guardado:", newMember);
-      setIsPaymentModalOpen(true);
-      console.log("Abriendo modal de pago...", isPaymentModalOpen);
-    }
-  }, [newMember]);
+    console.log("Estado de isPaymentModalOpen:", isPaymentModalOpen);
+  }, [isPaymentModalOpen]);
 
   return (
     <>
@@ -140,8 +129,8 @@ function NewMemberModal({ closeModal }) {
                 onChange={handlePlanChange}
                 className="select select-bordered"
               >
-                <option value="monthly">Mensual</option>
-                <option value="semiannual">Semestral</option>
+                <option value="Mensual">Mensual</option>
+                <option value="Semestral">Semestral</option>
               </select>
             </div>
             <div className="form-control">
@@ -176,7 +165,10 @@ function NewMemberModal({ closeModal }) {
       {isPaymentModalOpen && newMember && (
         <PaymentModal
           member={newMember} // Pasar el miembro registrado al modal de pago
-          closePaymentModal={() => setIsPaymentModalOpen(false)} // Cerrar el modal de pago
+          closePaymentModal={() => {
+            setIsPaymentModalOpen(false); // Cerrar el modal de pago
+            closeModal(); // Cerrar el modal de nuevo miembro solo después de cerrar el de pago
+          }}
         />
       )}
     </>

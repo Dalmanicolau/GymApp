@@ -33,7 +33,7 @@ function Payments() {
         <tbody>
           {payments.map(payment => (
             <tr key={payment._id}>
-              <td className="py-2 px-4 border-b">{payment.member.name}</td>
+              <td className="py-2 px-4 border-b">{payment.member?.name}</td>
               <td className="py-2 px-4 border-b">${payment.amount}</td>
               <td className="py-2 px-4 border-b">{payment.date}</td>
               <td className="py-2 px-4 border-b">

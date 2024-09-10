@@ -22,6 +22,26 @@ export const addMember = (formData) => async (dispatch) => {
   }
 };
 
+// Acción para renovar el plan de un miembro
+export const renewMemberPlan = (memberId) => async (dispatch) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/members/${memberId}/renew`);
+    dispatch({
+      type: 'RENEW_MEMBER_PLAN_SUCCESS',
+      payload: response.data,
+    });
+    return response.data; 
+  } catch (error) {
+    dispatch({
+      type: 'RENEW_MEMBER_PLAN_FAILURE',
+      payload: error,
+    });
+    throw error; 
+  }
+};
+
+
+
 // Acción para configurar los miembros en el estado
 export const setMembers = (members) => ({
   type: SET_MEMBERS,
