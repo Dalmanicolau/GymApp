@@ -24,7 +24,7 @@ function Activities() {
       </tr>
     </thead>
     <tbody>
-      {activities.map((activity) => (
+      {activities?.map((activity) => (
         <tr key={activity.id}>
           <td>{activity.name}</td>
           <td>{activity.instructor}</td>

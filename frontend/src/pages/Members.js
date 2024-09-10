@@ -45,9 +45,9 @@ function Members() {
   return (
     <div>
       <h2 className="font-bold text-2xl">Miembros</h2>
-      <button className="btn btn-primary" onClick={handleModalOpen}>Agregar Miembro</button>
+      <button className="btn btn-primary bg-slate-400 translate-x-[80rem]" onClick={handleModalOpen}>Agregar Miembro</button>
       <button
-        className={`btn btn-secondary ml-4 ${selectedMembers.length === 0 ? 'btn-disabled' : ''}`}
+        className={`btn btn-secondary translate-x-[60rem] ${selectedMembers.length === 0 ? 'btn-disabled' : ''}`}
         onClick={handleRenewPlan}
         disabled={selectedMembers.length === 0}
       >
