@@ -19,37 +19,29 @@ router.get("/", async (req, res) => {
 
     const payments = await Payment.find();
 
-    const table = Array(12).fill(0); // Tabla de 12 meses para contar miembros por mes
-
+    const table = Array(12).fill(0);
     const monthlySubs = await Member.aggregate([
-      {
-        $group: {
-          _id: { $month: "$createdAt" },
-          subs: { $sum: 1 },
-        },
-      },
+      { $group: { _id: { $month: "$createdAt" }, subs: { $sum: 1 } } }
     ]);
 
     monthlySubs.forEach((item) => {
-      table[item._id - 1] = item.subs; // Guardar los miembros por mes
+      table[item._id - 1] = item.subs;
     });
 
     // Obtener ingresos por mes
-    // Tabla de 12 meses para contar ingresos por mes
+    const now = new Date();
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
 
-    const monthlyIncome = await Payment.aggregate([
-      {
-        $group: {
-          _id: { $month: "$createdAt" }, // Agrupar pagos por mes
-          totalIncome: { $sum: "$amount" }, // Sumar el monto de los pagos
-        },
-      },
+    const paymentsByMonth = await Payment.aggregate([
+      { $match: { date: { $gte: oneYearAgo, $lte: now } } },
+      { $group: { _id: { year: { $year: "$date" }, month: { $month: "$date" } }, totalIncome: { $sum: "$amount" } } },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
     ]);
 
     const incomeByMonth = Array(12).fill(0);
-
-    monthlyIncome.forEach((item) => {
-      incomeByMonth[item._id - 1] = item.totalIncome; // Guardar los ingresos en el mes correspondiente
+    paymentsByMonth.forEach((payment) => {
+      const monthIndex = payment._id.month - 1;
+      incomeByMonth[monthIndex] += payment.totalIncome;
     });
 
     const sportsIncome = await Payment.aggregate([

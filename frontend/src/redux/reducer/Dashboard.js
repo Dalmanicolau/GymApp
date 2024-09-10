@@ -8,6 +8,7 @@ const initialState = {
   activityByIncome: [],
   notifications: [],
   sportsByMembers: [],
+  incomeByMonth: [],
 };
 
 const dashboardReducer = (state = initialState, action) => {
@@ -17,9 +18,11 @@ const dashboardReducer = (state = initialState, action) => {
         ...state,
         ...action.payload,
       };
+      
     default:
       return state;
   }
+
 };
 
 export default dashboardReducer;

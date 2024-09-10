@@ -98,6 +98,44 @@ router.get('/current', async (req, res) => {
   }
 });
 
+// Obtener ingresos por cada mes en el último año
+router.get('/income-per-month', async (req, res) => {
+  try {
+    // Definir el rango de fechas (último año)
+    const now = new Date();
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+
+    // Agrupar los pagos por mes y calcular el total facturado por mes
+    const paymentsByMonth = await Payment.aggregate([
+      {
+        $match: {
+          date: { $gte: oneYearAgo, $lte: now }
+        }
+      },
+      {
+        $group: {
+          _id: { year: { $year: "$date" }, month: { $month: "$date" } },
+          totalIncome: { $sum: "$amount" },
+        }
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 }  // Ordenar por año y mes
+      }
+    ]);
+
+    // Formatear los datos para enviarlos al frontend
+    const incomePerMonth = paymentsByMonth.map(payment => ({
+      month: payment._id.month,
+      year: payment._id.year,
+      totalIncome: payment.totalIncome,
+    }));
+
+    res.status(200).json(incomePerMonth);
+  } catch (error) {
+    console.error('Error al obtener los ingresos por mes:', error);
+    res.status(500).json({ message: 'Error al obtener los ingresos por mes', error });
+  }
+});
 
   
   // Obtener un pago específico

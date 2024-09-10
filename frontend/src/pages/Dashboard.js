@@ -20,6 +20,7 @@ function Dashboard() {
     dispatch(getDashboardData());
   }, [dispatch]);
 
+  console.log('acc', incomeByMonth);
   // Función para agrupar datos por actividad
   const groupByActivity = (data, key) => {
     const grouped = data.reduce((acc, item) => {
@@ -44,10 +45,10 @@ function Dashboard() {
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   // Dataset para el gráfico de barras
-  const barChartData = table.map((members, index) => ({
-    month: months[index], // Nombres de los meses
-    members: members,
-    income: incomeByMonth[index], // Usar los ingresos por mes correctos
+  const barChartData = months.map((month, index) => ({
+    month,
+    members: table[index] || 0,
+    income: incomeByMonth[index] || 0, // Usar los ingresos por mes correctos del dashboard
   }));
 
   const valueFormatter = (value) => `$${value}`;
