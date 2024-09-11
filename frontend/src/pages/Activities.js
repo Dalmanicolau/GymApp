@@ -12,30 +12,21 @@ function Activities() {
   }, []);
 
   return (
-    <div className="overflow-x-auto">
-  <h1 className="text-3xl font-bold mb-6">Actividades</h1>
-  <table className="table w-full bg-white rounded shadow">
-    {/* head */}
-    <thead className='text-2xl'>
-      <tr>
-        <th>Actividad</th>
-        <th>Instructor</th>
-        <th>Horario</th>
-      </tr>
-    </thead>
-    <tbody>
+    <div className="p-6">
+    <h1 className="text-3xl font-bold mb-6 ml-4">Actividades</h1>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {activities?.map((activity) => (
-        <tr key={activity.id}>
-          <td>{activity.name}</td>
-          <td>{activity.instructor}</td>
-          <td>{activity.schedule}</td>
-        </tr>
+        <div key={activity.id} className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <h2 className="text-xl font-semibold mb-2 p-4">{activity.name}</h2>
+          <div className="p-4">
+            <p className="text-gray-700 mb-1"><strong>Instructor:</strong> {activity.instructor}</p>
+            <p className="text-gray-700"><strong>Horario:</strong> {activity.schedule}</p>
+          </div>
+        </div>
       ))}
-    </tbody>
-  </table>
-</div>
-
-  );
+    </div>
+  </div>
+);
 }
 
 export default Activities;

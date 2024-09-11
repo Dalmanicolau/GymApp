@@ -73,9 +73,19 @@ router.post('/', async (req, res) => {
 
 // Obtener todos los member
 router.get('/', async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
+  const limitNumber = parseInt(limit);
+
   try {
-    const members = await Member.find().populate('activities');
-    res.status(200).json(members);
+    const members = await Member.find()
+      .skip(skip)
+      .limit(limitNumber)
+      .populate('activities');
+
+    const total = await Member.countDocuments(); // Contar todos los miembros sin paginación
+
+    res.status(200).json({ members, total });
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener socios', error });
   }

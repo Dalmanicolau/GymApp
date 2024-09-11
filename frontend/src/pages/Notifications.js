@@ -21,7 +21,7 @@ function Notifications() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Notificaciones</h1>
-      <div className="p-4 bg-white rounded shadow">
+      <div className="p-4 bg-gray-100 rounded shadow">
         {notifications.length > 0 ? (
           <ul className="space-y-4">
             {notifications.map((notification) => (
