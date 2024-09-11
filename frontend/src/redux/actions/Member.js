@@ -49,9 +49,9 @@ export const setMembers = (members) => ({
 });
 
 // Acción para obtener los miembros
-export const fetchMembers = (page = 1, limit = 10) => async (dispatch) => {
+export const fetchMembers = (page = 1, limit = 10, searchTerm = '' ) => async (dispatch) => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/members?page=${page}&limit=${limit}`);
+    const { data } = await axios.get(`${BASE_URL}/members?page=${page}&limit=${limit}&searchTerm=${searchTerm}`);
     dispatch(setMembers(data));
   } catch (error) {
     dispatch({ type: SET_ERROR, payload: error.message });

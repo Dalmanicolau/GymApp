@@ -73,17 +73,29 @@ router.post('/', async (req, res) => {
 
 // Obtener todos los member
 router.get('/', async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10, searchTerm = '' } = req.query;
   const skip = (page - 1) * limit;
   const limitNumber = parseInt(limit);
 
+  // Crear el filtro de búsqueda
+  const searchQuery = searchTerm
+    ? {
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } }, // Búsqueda por nombre (case insensitive)
+          { email: { $regex: searchTerm, $options: 'i' } }, // Búsqueda por email (case insensitive)
+        ],
+      }
+    : {}; // Si no hay búsqueda, no se filtra nada
+
   try {
-    const members = await Member.find()
+    // Buscar miembros con paginación y filtro
+    const members = await Member.find(searchQuery)
       .skip(skip)
       .limit(limitNumber)
       .populate('activities');
 
-    const total = await Member.countDocuments(); // Contar todos los miembros sin paginación
+    // Contar el total de miembros que coinciden con la búsqueda
+    const total = await Member.countDocuments(searchQuery);
 
     res.status(200).json({ members, total });
   } catch (error) {

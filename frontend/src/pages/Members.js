@@ -18,8 +18,8 @@ function Members() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    dispatch(fetchMembers(currentPage, itemsPerPage));
-  }, [dispatch, currentPage]);
+    dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm));
+  }, [dispatch, currentPage, searchTerm]);
 
   const handleModalOpen = () => setIsModalOpen(true);
   const handleModalClose = () => setIsModalOpen(false);
@@ -72,14 +72,15 @@ function Members() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+      <div className="flex justify-end mx-2 ">
       <button
-        className="btn btn-primary bg-blue-500 translate-x-[80rem]"
+        className="btn btn-primary bg-blue-500 mr-4"
         onClick={handleModalOpen}
       >
         Agregar Miembro
       </button>
       <button
-        className={`btn btn-secondary translate-x-[60rem] ${
+        className={`btn btn-secondary  ${
           selectedMembers.length === 0 ? "btn-disabled" : ""
         }`}
         onClick={handleRenewPlan}
@@ -87,6 +88,7 @@ function Members() {
       >
         Renovar plan
       </button>
+      </div>
       <div className="overflow-x-auto mt-4">
         <table className="table">
           <thead>
