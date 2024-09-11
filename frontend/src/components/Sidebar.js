@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.jpg";
-import NavBar from "./NavBar";
 
+//eslint-disable-next-line
 function Sidebar() {
   return (
     <div>
@@ -11,6 +11,7 @@ function Sidebar() {
         <img src={logo} alt="Logo" className="h-24 ml-2 mt-10" />
         <ul className="menu bg-base-200 rounded-box w-56  ">
           <li className="p-2 text-2xl ">
+          
             <a className="hover:bg-blue-500">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
