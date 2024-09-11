@@ -3,6 +3,7 @@ import Member from "../models/Members.js";
 import Activity from "../models/Activity.js";
 import Payment from "../models/Payment.js";
 import Notification from "../models/Notification.js";
+import moment from 'moment-timezone';
 
 const router = express.Router();
 
@@ -18,10 +19,11 @@ router.get("/", async (req, res) => {
     });
 
     const totalActivity = await Activity.countDocuments({});
-    console.log(totalActivity, "saklsdjfglwehgkj")
      
     // Contador de planes por vencer
-    const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
+    const currentDay = moment().tz("America/Argentina/Cordoba");
+    const nextWeek = currentDay.clone().add(7, 'days').toDate();
+    console.log(nextWeek)
     const expiringMembersCount = await Member.countDocuments({
       'plan.expirationDate': { $lte: nextWeek },
     });
