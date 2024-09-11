@@ -16,6 +16,12 @@ router.get("/", async (req, res) => {
     const membersPerMonth = await Member.countDocuments({
       createdAt: { $gte: monthDate },
     });
+     
+    // Contador de planes por vencer
+    const nextWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7);
+    const expiringMembersCount = await Member.countDocuments({
+      'plan.expirationDate': { $lte: nextWeek },
+    });
 
     const payments = await Payment.find();
 
@@ -88,6 +94,7 @@ router.get("/", async (req, res) => {
       notifications,
       sportsByMembers,
       incomeByMonth, // Ingresos por mes
+      expiringMembersCount,
     });
   } catch (err) {
     console.log(err);

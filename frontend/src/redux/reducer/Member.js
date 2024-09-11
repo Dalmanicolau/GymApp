@@ -3,6 +3,7 @@ import { ADD_MEMBER, SET_MEMBERS, SET_ERROR } from '../actions/Member';
 
 const initialState = {
   members: [],
+  total: 0,
   error: null,
 };
 

@@ -11,32 +11,46 @@ import Payments from './pages/Payments';
 import Notifications from './pages/Notifications';
 import Users from './pages/Users';
 import Sidebar from './components/Sidebar';
+import NavBar from './components/NavBar';
 
 const PrivateRoute = ({ children }) => {
-    const { user } = useContext(AuthContext);
+    const { user, loading } = useContext(AuthContext);
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return user ? children : <Navigate to="/login" />;
 }
 
 function App() {
   return (
-    <Provider store = {store}>
+    <Provider store={store}>
       <AuthProvider>
-      <Router>
-        <div className="flex">
-          <Sidebar />
-          <div className='flex-grow p-6'>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-              <Route path="/members" element={<PrivateRoute><Members /></PrivateRoute>} />
-              <Route path="/activities" element={<PrivateRoute><Activities /></PrivateRoute>} />
-              <Route path="/payments" element={<PrivateRoute><Payments /></PrivateRoute>} />
-              <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
-              <Route path="/users" element={<PrivateRoute><Users /></PrivateRoute>} />
-            </Routes>
+        <Router>
+          <NavBar /> {/* Fijo en la parte superior */}
+          <div className="flex">
+            <Sidebar />
+            <div className="flex-grow p-6 pt-16"> {/* pt-16 añade padding-top para el espacio del NavBar */}
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/*"
+                  element={
+                    <PrivateRoute>
+                      <Routes>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/members" element={<Members />} />
+                        <Route path="/activities" element={<Activities />} />
+                        <Route path="/payments" element={<Payments />} />
+                        <Route path="/notifications" element={<Notifications />} />
+                        <Route path="/users" element={<Users />} />
+                      </Routes>
+                    </PrivateRoute>
+                  }
+                />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
       </AuthProvider>
     </Provider>
   );

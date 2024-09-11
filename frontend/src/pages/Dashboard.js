@@ -58,27 +58,31 @@ function Dashboard() {
       <h1 className="text-3xl font-bold mb-6">Panel</h1>
       
       {/* Información general */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold">Miembros</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="p-4 text-center bg-blue-100 rounded shadow  w-[25rem] h-[20rem] ">
+          <h2 className="text-2xl font-bold mt-20">Miembros</h2>
           <p>Total: {membersCount}</p>
         </div>
-        <div className="p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold">Pagos</h2>
+        <div className="p-4 text-center bg-red-100 rounded shadow  
+        w-[25rem] h-[20rem] ">
+          <h2 className="text-2xl mt-20 font-bold">Pagos</h2>
           <p>Reciente: ${totalIncome} </p>
         </div>
-        <div className="p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold">Actividades</h2>
+        <div className="p-4 text-center bg-orange-100 rounded shadow  
+        w-[25rem] h-[20rem]">
+          <h2 className="text-2xl mt-20 font-bold">Actividades</h2>
           <p>Recientes: {membersPerMonth}</p>
         </div>
       </div>
 
       {/* Gráficos de Pie para Ingresos por Actividad y Miembros por Deporte */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="p-4 bg-white rounded shadow flex">
+        <div className="p-4 bg-gray-100 rounded shadow flex">
           <div>
-            <h2 className="text-xl font-bold mb-4">Ingresos por Actividad</h2>
+            <h2 className="text-2xl font-bold mb-4">Ingresos por Actividad</h2>
             <PieChart
+            
+            colors={['red', 'blue', 'gray']}
               series={[{ data: incomeData }]}
               width={350}
               height={350}
@@ -96,9 +100,9 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="p-4 bg-white rounded shadow flex">
+        <div className="p-4 bg-gray-100 rounded shadow flex">
           <div>
-            <h2 className="text-xl font-bold mb-4">Miembros por Deporte</h2>
+            <h2 className="text-2xl font-bold mb-4">Miembros por Deporte</h2>
             <PieChart
               series={[{ data: membersData }]}
               width={350}
@@ -119,7 +123,7 @@ function Dashboard() {
       </div>
 
       {/* Gráfico de Barras para Ingresos y Miembros por Mes */}
-      <div className="p-4 bg-white rounded shadow mt-6 flex">
+      <div className="p-4 bg-gray-100 rounded shadow mt-6 flex">
         <div>
           <h2 className="text-xl font-bold mb-4">Ingresos y Miembros por Mes</h2>
           <BarChart
