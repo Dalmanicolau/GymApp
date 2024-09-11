@@ -1,25 +1,31 @@
-  import React, { useEffect } from "react";
+  import React, { useEffect, useContext } from "react";
   import { useSelector, useDispatch } from "react-redux";
   import { getDashboardData } from "../redux/actions/Dashboard";
   import { BarChart } from '@mui/x-charts';
+import { FaPeopleGroup, FaMoneyBillTrendUp } from "react-icons/fa6";
+import { CgGym } from "react-icons/cg";
+import { RiPassExpiredFill } from "react-icons/ri";
+import { AuthContext } from "../context/AuthContext";
   import { Pie } from "react-chartjs-2";
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
   ChartJS.register(ArcElement, Tooltip, Legend);
 
-  function Dashboard() {
-    const dispatch = useDispatch();
-    const {
-      membersCount,
-      totalIncome,
-      membersPerMonth,
-      activityByIncome,
-      notifications,
-      sportsByMembers,
-      table, // Tabla de miembros por mes
-      incomeByMonth, // Ingresos por mes
-      expiringMembersCount,
-    } = useSelector((state) => state.dashboard);
+function Dashboard() {
+  const dispatch = useDispatch();
+  const { user } = useContext(AuthContext);
+  const {
+    membersCount,
+    totalIncome,
+    membersPerMonth,
+    activityByIncome,
+    notifications,
+    sportsByMembers,
+    table, // Tabla de miembros por mes
+    incomeByMonth, // Ingresos por mes
+    expiringMembersCount,
+    totalActivity,
+  } = useSelector((state) => state.dashboard);
 
     useEffect(() => {
       dispatch(getDashboardData());
@@ -82,39 +88,41 @@
     ],
   };
 
-    return (
-      <div>
-        <h1 className="text-3xl font-bold mb-6">Panel</h1>
-        
-        {/* Información general */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div className="p-4 text-center bg-blue-100 rounded shadow w-[20rem] h-[20rem] ">
-        
-            <h2 className="text-2xl font-bold mt-20">Miembros</h2>
-            <p>Total: {membersCount}</p>
-            
-          </div>
-          <div className="p-4 text-center bg-red-100 rounded shadow  
-          w-[20rem] h-[20rem] ">
-            <h2 className="text-2xl mt-20 font-bold">Pagos</h2>
-            <p>Reciente: ${totalIncome} </p>
-          </div>
-          <div className="p-4 text-center bg-orange-100 rounded shadow  
-          w-[20rem] h-[20rem]">
-            <h2 className="text-2xl mt-20 font-bold">Actividades</h2>
-            <p>Recientes: {membersPerMonth}</p>
-          </div>
-          <div className="p-4 text-center bg-orange-100 rounded shadow  
-          w-[20rem] h-[20rem]">
-            <h2 className="text-2xl mt-20 font-bold">Planes por vencer</h2>
-            <p>Recientes: {expiringMembersCount}</p>
-          </div>
-          
+  return (
+    <div>
+     <h1 className="text-3xl font-bold mb-6">
+        {user ? `¡Hola ${user.username}, bienvenido de vuelta!` : 'Hola, bienvenido de vuelta!'}
+      </h1>
+      
+      {/* Información general */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="p-4 text-center bg-sky-400 rounded shadow  w-[20rem] h-[20rem] ">
+        <FaPeopleGroup className="w-20 h-20 text-sky-700 mx-[6.5rem] mt-16"/>
+          <h2 className="text-3xl font-extrabold font-sans text-sky-700">Miembros</h2>
+          <p className="text-sky-700 font-semibold text-xl">Total: {membersCount}</p>
         </div>
+        <div className="p-4 text-center bg-amber-300 rounded shadow  
+        w-[20rem] h-[20rem] mx-2">
+          <FaMoneyBillTrendUp className="w-20 h-20 text-amber-700 mx-[6.5rem] mt-16"/>
+          <h2 className="text-3xl font-extrabold font-sans text-amber-700">Pagos</h2>
+          <p className="text-amber-700 font-semibold text-xl">Reciente: ${totalIncome} </p>
+        </div>
+        <div className="p-4 text-center bg-green-400 rounded shadow  
+        w-[20rem] h-[20rem]">
+          <CgGym className="w-20 h-20 text-green-700 mx-[6.5rem] mt-16"/>
+          <h2 className="text-3xl font-extrabold font-sans text-green-700">Actividades</h2>
+          <p className="text-green-700 font-semibold text-xl">Total: {totalActivity}</p>
+        </div>
+        <div className="p-4 text-center bg-violet-400 rounded shadow  w-[20rem] h-[20rem] ">
+        <RiPassExpiredFill className="w-20 h-20 text-violet-700 mx-[6.5rem] mt-16"/>
+          <h2 className="text-3xl font-extrabold font-sans text-violet-700">Planes por vencer</h2>
+          <p className="text-violet-700 font-semibold text-xl">Total: {expiringMembersCount}</p>
+        </div>
+      </div>
 
         {/* Gráficos de Pie para Ingresos por Actividad y Miembros por Deporte */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="p-4 bg-gray-100 rounded shadow flex">
+        <div className="p-4 rounded shadow flex">
           <div>
             <h2 className="text-2xl font-bold mb-4">Ingresos por Actividad</h2>
             <Pie data={incomeChartData} width={350} height={350} />
