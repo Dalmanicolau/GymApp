@@ -62,6 +62,7 @@ function NewMemberModal({ closeModal }) {
     e.preventDefault();
     try {
       const registeredMember = await dispatch(addMember(formData));
+      console.log("Miembro registrado:", registeredMember);
       if (registeredMember) {
         setNewMember(registeredMember);
         setIsPaymentModalOpen(true);

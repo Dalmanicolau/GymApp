@@ -16,9 +16,11 @@ export const addMember = (formData) => async (dispatch) => {
       type: ADD_MEMBER, 
       payload: member 
     });
-    return member; // Asegúrate de retornar la data aquí para que registeredMember la reciba
+    return member;
   } catch (error) {
+    dispatch({type:SET_ERROR, payload: error.message})
     console.error("Error al agregar miembro:", error);
+    throw error;
   }
 };
 
