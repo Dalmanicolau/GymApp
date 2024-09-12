@@ -1,11 +1,18 @@
-const express = require('express');
-const Activity = require('../models/Activity');
+import express from 'express';
+import Activity from '../models/Activity.js';
+
 const router = express.Router();
 
 // Crear nueva actividad
 router.post('/', async (req, res) => {
   try {
-    const newActivity = new Activity(req.body);
+    const { name, available, price, category } = req.body;
+    const newActivity = new Activity({
+      name,
+      available,
+      price,
+      category
+    })
     await newActivity.save();
     res.status(201).json(newActivity);
   } catch (error) {
@@ -33,4 +40,4 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

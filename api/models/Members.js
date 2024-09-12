@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const memberSchema = new mongoose.Schema({
   name: String,
   email: String,
   cellphone: String,
   plan: {
-    type: { type: String, enum: ['monthly', 'semiannual'], required: true },
+    type: { type: String, enum: ['Mensual', 'Semestral'], required: true },
     initDate: { type: Date, required: true },
     expirationDate: { type: Date, required: true },
     lastRenewalDate: Date,
@@ -17,4 +17,4 @@ const memberSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const Member = mongoose.model('Member', memberSchema);
-module.exports = Member;
+export default Member;

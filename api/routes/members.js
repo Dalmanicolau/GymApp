@@ -1,6 +1,7 @@
-const express = require('express');
-const Member = require('../models/Members');
-const Activity = require('../models/Activity');
+import express from 'express';
+import Member from '../models/Members.js';
+import Activity from '../models/Activity.js';
+
 const router = express.Router();
 
 router.post('/', async (req, res) => {
@@ -15,25 +16,32 @@ router.post('/', async (req, res) => {
     const activityIds = activities.map(id => id.toString());
     const activitiesData = await Activity.find({ '_id': { $in: activityIds } });
 
+    // Imprimir actividades para verificar los datos
+    
+
+    // Separar actividades en musculación y clases
+    const hasMusculacion = activitiesData.some(activity => activity.category === 'musculacion');
+    const hasClass = activitiesData.some(activity => activity.category === 'class');
+
+
+
     let totalPriceActivities = 0;
 
     if (promotion) {
-      const musculacion = await Activity.findOne({ name: 'Musculacion' });
-      if (!musculacion) {
-        return res.status(400).json({ message: 'La actividad de musculación no se encontró en la base de datos.' });
-      }
-      if (!activityIds.includes(musculacion._id.toString())) {
-        return res.status(400).json({ message: 'La promoción debe incluir musculación.' });
-      }
-      if (activityIds.length !== 2) {
-        return res.status(400).json({ message: 'La promoción permite máximo 2 actividades.' });
-      }
-      totalPriceActivities = 18000;
+      // Si hay promoción, el precio es 19,000
+      totalPriceActivities = 19000;
+    } else if (hasMusculacion && hasClass) {
+      // Si no hay promoción, pero el miembro selecciona musculación y al menos una clase
+      totalPriceActivities = 19000;
     } else {
-      totalPriceActivities = activitiesData.reduce((total, activity) => total + activity.price, 0);
+      // Si no hay promoción y solo musculación o solo clases
+      totalPriceActivities = 17000;
     }
 
-    const expirationDate = plan.type === 'monthly' ? 
+    // Imprimir el precio calculado
+    console.log("Total Price Activities:", totalPriceActivities);
+
+    const expirationDate = plan?.type === 'Mensual' ? 
       new Date(new Date(plan.initDate).setMonth(new Date(plan.initDate).getMonth() + 1)) :
       new Date(new Date(plan.initDate).setMonth(new Date(plan.initDate).getMonth() + 6));
 
@@ -61,11 +69,35 @@ router.post('/', async (req, res) => {
   }
 });
 
+
+
 // Obtener todos los member
 router.get('/', async (req, res) => {
+  const { page = 1, limit = 10, searchTerm = '' } = req.query;
+  const skip = (page - 1) * limit;
+  const limitNumber = parseInt(limit);
+
+  // Crear el filtro de búsqueda
+  const searchQuery = searchTerm
+    ? {
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } }, // Búsqueda por nombre (case insensitive)
+          { email: { $regex: searchTerm, $options: 'i' } }, // Búsqueda por email (case insensitive)
+        ],
+      }
+    : {}; // Si no hay búsqueda, no se filtra nada
+
   try {
-    const members = await Member.find().populate('activities');
-    res.status(200).json(members);
+    // Buscar miembros con paginación y filtro
+    const members = await Member.find(searchQuery)
+      .skip(skip)
+      .limit(limitNumber)
+      .populate('activities');
+
+    // Contar el total de miembros que coinciden con la búsqueda
+    const total = await Member.countDocuments(searchQuery);
+
+    res.status(200).json({ members, total });
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener socios', error });
   }
@@ -78,14 +110,16 @@ router.put('/:id/renew', async (req, res) => {
     if (!member) return res.status(404).json({ message: 'Socio no encontrado' });
 
     const currentDate = new Date();
-    member.plan.lastRenewalDate = currentDate; // actualizar la fecha de la última renovación
+    member.plan.lastRenewalDate = currentDate;
 
-    const newExpiration = member.plan.type === 'monthly' ?
+    const newExpiration = member.plan.type === 'Mensual' ?
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate()) :
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 6, currentDate.getDate());
 
     member.plan.expirationDate = newExpiration;
+
     await member.save();
+
     
     res.status(200).json(member);
   } catch (error) {
@@ -93,43 +127,4 @@ router.put('/:id/renew', async (req, res) => {
   }
 });
 
-
-
-// Obtener facturación del mes
-router.get('/facturation/:month/:year', async (req, res) => {
-  const { month, year } = req.params;
-  try {
-    const initMonth = new Date(`${year}-${month}-01`);
-    const endMonth = new Date(initMonth.getFullYear(), initMonth.getMonth() + 2, 0, 23, 59, 59); // último día del mes actual
-
-    console.log('initMonth:', initMonth);
-    console.log('endMonth:', endMonth);
-
-    const members = await Member.find({
-      $or: [
-        { 'plan.initDate': { $gte: initMonth, $lte: endMonth } },
-        { 'plan.lastRenewalDate': { $gte: initMonth, $lte: endMonth } }
-      ]
-    }).populate('activities');
-
-    console.log('members found:', members);
-
-    const totalFacturated = members.reduce((total, member) => {
-      if (member.plan.promotion) {
-        return total + member.plan.price;
-      } else {
-        const priceActivities = member.activities.reduce((sum, activity) => sum + activity.price, 0);
-        return total + member.plan.price + priceActivities;
-      }     
-    }, 0);
-
-    res.status(200).json({ total: totalFacturated, members: members.length });
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Error al obtener la facturación', error });
-  }
-});
-
-
-
-module.exports = router;
+export default router;
