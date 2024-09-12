@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMember } from "../redux/actions/Member";
-import { fetchActivities } from "../redux/actions/Activity"; // Asumiendo que tienes esta acción
-import PaymentModal from "./PaymentModal"; // Importar el modal de pago
+import { fetchActivities } from "../redux/actions/Activity";
+import PaymentModal from "./PaymentModal";
+import { IoMdPersonAdd } from "react-icons/io";
 
 function NewMemberModal({ closeModal }) {
   const dispatch = useDispatch();
   const activities = useSelector((state) => state.activities.activities);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // Controlar apertura del modal de pago
-  const [newMember, setNewMember] = useState(null); // Guardar el miembro recién registrado
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [newMember, setNewMember] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     cellphone: "",
     plan: {
-      type: "Mensual", // Valor por defecto
+      type: "Mensual",
       initDate: "",
     },
     activities: [],
-    automaticRenewal: true, // Valor por defecto si es necesario
+    automaticRenewal: true,
     promotion: false,
   });
 
   useEffect(() => {
-    dispatch(fetchActivities()); // Cargar actividades disponibles al montar el componente
+    dispatch(fetchActivities());
   }, [dispatch]);
 
   const handleInputChange = (e) => {
@@ -43,39 +44,42 @@ function NewMemberModal({ closeModal }) {
   };
 
   const handleActivityChange = (e) => {
-    const selectedActivities = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setFormData({ ...formData, activities: selectedActivities });
+    const { value, checked } = e.target;
+    let updatedActivities = [...formData.activities];
+
+    if (checked) {
+      updatedActivities.push(value);
+    } else {
+      updatedActivities = updatedActivities.filter(
+        (activity) => activity !== value
+      );
+    }
+
+    setFormData({ ...formData, activities: updatedActivities });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const registeredMember = await dispatch(addMember(formData)); // Registrar el miembro
-      console.log("Miembro registrado:", registeredMember); // Verifica que registeredMember tenga el valor correcto
-
+      const registeredMember = await dispatch(addMember(formData));
       if (registeredMember) {
-        setNewMember(registeredMember); // Guardar el miembro registrado en el estado
-        console.log("Guardando nuevo miembro en el estado:", registeredMember); // Verifica que newMember se esté guardando correctamente
-        setIsPaymentModalOpen(true); // Abrir el modal de pago
+        setNewMember(registeredMember);
+        setIsPaymentModalOpen(true);
       }
     } catch (error) {
       console.error("Error al registrar el miembro", error);
     }
   };
 
-  useEffect(() => {
-    console.log("Estado de isPaymentModalOpen:", isPaymentModalOpen);
-  }, [isPaymentModalOpen]);
-
   return (
     <>
       {/* Modal para registrar nuevo miembro */}
       <div className="modal modal-open">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Registrar Nuevo Miembro</h3>
+          <IoMdPersonAdd className="ml-[45%] h-10 w-10 text-gray-700" />
+          <h3 className="font-bold text-lg text-center">
+            Registrar Nuevo Miembro
+          </h3>
           <form onSubmit={handleSubmit}>
             <div className="form-control">
               <label className="label">Nombre</label>
@@ -133,27 +137,33 @@ function NewMemberModal({ closeModal }) {
                 <option value="Semestral">Semestral</option>
               </select>
             </div>
+
+            {/* Checkboxes para seleccionar actividades */}
             <div className="form-control">
               <label className="label">Actividades</label>
-              <select
-                name="activities"
-                multiple
-                value={formData.activities}
-                onChange={handleActivityChange}
-                className="select select-bordered"
-              >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {activities.map((activity) => (
-                  <option key={activity._id} value={activity._id}>
-                    {activity.name}
-                  </option>
+                  <div key={activity._id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={activity._id}
+                      value={activity._id}
+                      onChange={handleActivityChange}
+                      className="checkbox checkbox-primary"
+                    />
+                    <label htmlFor={activity._id} className="ml-2">
+                      {activity.name}
+                    </label>
+                  </div>
                 ))}
-              </select>
+              </div>
             </div>
+
             <div className="modal-action">
               <button type="button" className="btn" onClick={closeModal}>
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="btn btn-primary bg-blue-600">
                 Registrar
               </button>
             </div>
@@ -164,10 +174,10 @@ function NewMemberModal({ closeModal }) {
       {/* Modal para confirmar el pago */}
       {isPaymentModalOpen && newMember && (
         <PaymentModal
-          member={newMember} // Pasar el miembro registrado al modal de pago
+          member={newMember}
           closePaymentModal={() => {
-            setIsPaymentModalOpen(false); // Cerrar el modal de pago
-            closeModal(); // Cerrar el modal de nuevo miembro solo después de cerrar el de pago
+            setIsPaymentModalOpen(false);
+            closeModal();
           }}
         />
       )}

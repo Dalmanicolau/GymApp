@@ -18,7 +18,7 @@ function Sidebar() {
          <div className="bg-gray-100 p-4 mt-4 mb-2 rounded-lg flex items-center h-18 w-48 ml-10">
          <RiAdminFill className="w-12 h-7"/>
           <div>
-            <h3 className="text-lg font-semibold">{user.username}</h3>
+            <h3 className="text-lg font-semibold">{user?.username}</h3>
             <p className="text-sm text-gray-600">Admin</p>
           </div>
         </div>

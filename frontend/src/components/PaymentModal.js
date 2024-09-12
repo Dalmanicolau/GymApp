@@ -1,10 +1,11 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addPayment } from '../redux/actions/Payments';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addPayment } from "../redux/actions/Payments";
+
 
 function PaymentModal({ member, closePaymentModal }) {
   const dispatch = useDispatch();
-  
+
   // Obtener actividades del store
   const activities = useSelector((state) => state.activities.activities);
 
@@ -21,22 +22,49 @@ function PaymentModal({ member, closePaymentModal }) {
   };
 
   // Buscar los nombres de las actividades
-  const memberActivities = member?.activities?.map(activityId => {
-    const activity = activities.find(act => act._id === activityId);
-    return activity ? activity.name : 'Actividad desconocida';
+  const memberActivities = member?.activities?.map((activityId) => {
+    const activity = activities.find((act) => act._id === activityId);
+    return activity ? activity.name : "Actividad desconocida";
   });
 
   return (
     <div className="modal modal-open">
+      
       <div className="modal-box">
-        <h3 className="font-bold text-lg">Confirmar Pago</h3>
-        <p><strong>Nombre:</strong> {member?.name}</p>
-        <p><strong>Actividades:</strong> {memberActivities?.join(', ')}</p>
-        <p><strong>Total a Pagar:</strong> ${member?.plan?.price || 'Precio no disponible'}</p>
+    
+        <h3 className="font-bold text-2xl  mb-4">Confirmar Pago</h3>
+        
+        <div className="mb-4">
+          <p className="text-lg">
+            <strong>Nombre: </strong> {member?.name}
+          </p>
+        </div>
+       
+        <div className="mb-4">
+          <p className="text-lg">
+            <strong>Actividades: </strong>
+            <span className="badge badge-outline badge-primary ml-1">
+              {memberActivities?.join(", ")}
+            </span>
+          </p>
+        </div>
 
+        <div className="mb-4">
+          <p className="text-lg">
+            <strong>Total a Pagar: </strong>
+            <span className="text-primary">
+              ${member?.plan?.price || "Precio no disponible"}
+            </span>
+          </p>
+        </div>
+        
         <div className="modal-action">
-          <button className="btn" onClick={closePaymentModal}>Cancelar</button>
-          <button className="btn btn-primary" onClick={handlePayment}>Confirmar Pago</button>
+          <button className="btn btn-ghost" onClick={closePaymentModal}>
+            Cancelar
+          </button>
+          <button className="btn btn-primary bg-blue-600" onClick={handlePayment}>
+            Confirmar Pago
+          </button>
         </div>
       </div>
     </div>
