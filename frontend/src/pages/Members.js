@@ -8,7 +8,10 @@ import { FaUser } from "react-icons/fa";
 
 function Members() {
   const dispatch = useDispatch();
-  const { members, total } = useSelector((state) => state.members.members);
+  const { members, total } = useSelector((state) => ({
+    members: state.members.members,
+    total: state.members.total
+  }));  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);

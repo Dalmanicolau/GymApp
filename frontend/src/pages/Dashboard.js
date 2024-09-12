@@ -71,7 +71,7 @@ function Dashboard() {
     datasets: [
       {
         data: incomeData.map(item => item.value),
-        backgroundColor: ['#1d4ed8', '#ea580c', '#f43f5e', '#10b981', '#facc15', '#374151'], // Colores ajustados según la paleta
+        backgroundColor: ['#1d4ed8', '#ea580c', '#60a5fa', '#fb923c', '#1e3a8a', '#fde047'], // Colores ajustados según la paleta
         hoverOffset: 4,
       },
     ],
@@ -83,7 +83,7 @@ function Dashboard() {
     datasets: [
       {
         data: membersData.map(item => item.value),
-        backgroundColor: ['#1d4ed8', '#ea580c', '#10b981', '#f59e0b', '#ef4444', '#6b7280'], // Colores ajustados según la paleta
+        backgroundColor: ['#1d4ed8', '#ea580c', '#0284c7', '#92400e', '#38bdf8', '#fbbf24'], // Colores ajustados según la paleta
         hoverOffset: 4,
       },
     ],
